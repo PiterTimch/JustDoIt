@@ -4,4 +4,5 @@
     <color name="primaryColor">#113F67</color>
     <color name="titleTextColor">#f2f8ff</color>
     <color name="secondaryTextColor">#b6d0f0</color>
+    <color name="taskBgColor">#061929</color>
 </resources>
