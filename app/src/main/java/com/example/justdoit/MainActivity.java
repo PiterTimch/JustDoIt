@@ -10,6 +10,15 @@ import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.justdoit.dto.zadachi.ZadachaItemDTO;
+import com.example.justdoit.network.RetrofitClient;
+
+import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
 public class MainActivity extends AppCompatActivity {
 
     RecyclerView taskRecycler;
@@ -57,5 +66,19 @@ public class MainActivity extends AppCompatActivity {
                 });
 
         callback.attachToRecyclerView(taskRecycler);
+
+        RetrofitClient.getInstance().getZadachiApi().list().enqueue(new Callback<List<ZadachaItemDTO>>() {
+            @Override
+            public void onResponse(Call<List<ZadachaItemDTO>> call, Response<List<ZadachaItemDTO>> response) {
+                if (response.isSuccessful()){
+                    List<ZadachaItemDTO> items = response.body();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<ZadachaItemDTO>> call, Throwable t) {
+
+            }
+        });
     }
 }
