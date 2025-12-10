@@ -66,19 +66,5 @@ public class MainActivity extends AppCompatActivity {
                 });
 
         callback.attachToRecyclerView(taskRecycler);
-
-        RetrofitClient.getInstance().getZadachiApi().list().enqueue(new Callback<List<ZadachaItemDTO>>() {
-            @Override
-            public void onResponse(Call<List<ZadachaItemDTO>> call, Response<List<ZadachaItemDTO>> response) {
-                if (response.isSuccessful()){
-                    List<ZadachaItemDTO> items = response.body();
-                }
-            }
-
-            @Override
-            public void onFailure(Call<List<ZadachaItemDTO>> call, Throwable t) {
-
-            }
-        });
     }
 }

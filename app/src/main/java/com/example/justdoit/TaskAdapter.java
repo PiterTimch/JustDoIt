@@ -4,23 +4,45 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
+import com.example.justdoit.dto.zadachi.ZadachaItemDTO;
+import com.example.justdoit.network.RetrofitClient;
+
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder> {
 
-    ArrayList<String> taskList = new ArrayList<>();
+    ArrayList<ZadachaItemDTO> taskList = new ArrayList<>();
 
     public TaskAdapter() {
-        taskList.add("Зробити домашку");
-        taskList.add("Купити хліб");
-        taskList.add("Прибрати кімнату");
+        RetrofitClient.getInstance().getZadachiApi().list().enqueue(new Callback<List<ZadachaItemDTO>>() {
+            @Override
+            public void onResponse(Call<List<ZadachaItemDTO>> call, Response<List<ZadachaItemDTO>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    taskList.addAll(response.body());
+                    notifyDataSetChanged();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<ZadachaItemDTO>> call, Throwable t) {
+                t.printStackTrace();
+            }
+        });
     }
+
 
     @NonNull
     @Override
@@ -32,7 +54,12 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder
 
     @Override
     public void onBindViewHolder(@NonNull TaskViewHolder holder, int position) {
-        holder.taskText.setText(taskList.get(position));
+        ZadachaItemDTO item = taskList.get(position);
+        holder.taskText.setText(item.getName());
+
+        Glide.with(holder.itemView.getContext())
+                .load(item.getImage())
+                .into(holder.taskImage);
     }
 
     @Override
@@ -40,7 +67,6 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder
         return taskList.size();
     }
 
-    // щоб їздило догори і донизу
     public void swap(int from, int to) {
         Collections.swap(taskList, from, to);
         notifyItemMoved(from, to);
@@ -50,11 +76,14 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder
 
         TextView taskText;
         CheckBox taskCheckBox;
+        ImageView taskImage;
 
         public TaskViewHolder(@NonNull View itemView) {
             super(itemView);
             taskText = itemView.findViewById(R.id.taskText);
             taskCheckBox = itemView.findViewById(R.id.taskCheckBox);
+            taskImage = itemView.findViewById(R.id.taskImage);
         }
     }
+
 }
