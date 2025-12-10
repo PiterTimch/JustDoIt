@@ -11,6 +11,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.example.justdoit.config.Config;
 import com.example.justdoit.dto.zadachi.ZadachaItemDTO;
 import com.example.justdoit.network.RetrofitClient;
 
@@ -58,9 +59,10 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder
         holder.taskText.setText(item.getName());
 
         Glide.with(holder.itemView.getContext())
-                .load(item.getImage())
+                .load(Config.IMAGES_URL + "400_" + item.getImage())
                 .into(holder.taskImage);
     }
+
 
     @Override
     public int getItemCount() {
