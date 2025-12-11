@@ -5,4 +5,5 @@
     <color name="titleTextColor">#f2f8ff</color>
     <color name="secondaryTextColor">#86909c</color>
     <color name="taskBgColor">#416e87</color>
+    <color name="imageBorderColor">#01598a</color>
 </resources>
