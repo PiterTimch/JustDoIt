@@ -44,7 +44,6 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder
         });
     }
 
-
     @NonNull
     @Override
     public TaskViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -62,7 +61,6 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder
                 .load(Config.IMAGES_URL + "400_" + item.getImage())
                 .into(holder.taskImage);
     }
-
 
     @Override
     public int getItemCount() {
