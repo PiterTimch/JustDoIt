@@ -1,6 +1,8 @@
 package com.example.justdoit;
 
 import android.os.Bundle;
+import android.content.Intent;
+import android.view.View;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -14,6 +16,7 @@ public class MainActivity extends AppCompatActivity {
 
     RecyclerView taskRecycler;
     TaskAdapter adapter;
+    View addButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,6 +31,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
         taskRecycler = findViewById(R.id.taskRecycler);
+        addButton = findViewById(R.id.addButton);
 
         adapter = new TaskAdapter();
         taskRecycler.setAdapter(adapter);
@@ -57,5 +61,9 @@ public class MainActivity extends AppCompatActivity {
                 });
 
         callback.attachToRecyclerView(taskRecycler);
+
+        addButton.setOnClickListener(v ->
+                startActivity(new Intent(MainActivity.this, AddTaskActivity.class))
+        );
     }
 }
