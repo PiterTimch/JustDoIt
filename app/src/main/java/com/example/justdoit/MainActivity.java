@@ -14,6 +14,15 @@ import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.justdoit.dto.zadachi.ZadachaItemDTO;
+import com.example.justdoit.network.RetrofitClient;
+
+import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
 public class MainActivity extends BaseActivity {
 
     RecyclerView taskRecycler;
@@ -34,9 +43,6 @@ public class MainActivity extends BaseActivity {
 
         taskRecycler = findViewById(R.id.taskRecycler);
         addButton = findViewById(R.id.addButton);
-
-        adapter = new TaskAdapter();
-        taskRecycler.setAdapter(adapter);
         taskRecycler.setLayoutManager(
                 new androidx.recyclerview.widget.LinearLayoutManager(this)
         );
@@ -69,5 +75,24 @@ public class MainActivity extends BaseActivity {
                     goToAddTask();
                 }
         );
+
+        loadTasks();
+    }
+
+    private void loadTasks() {
+        RetrofitClient.getInstance().getZadachiApi().list().enqueue(new Callback<List<ZadachaItemDTO>>() {
+            @Override
+            public void onResponse(Call<List<ZadachaItemDTO>> call, Response<List<ZadachaItemDTO>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    adapter = new TaskAdapter(response.body());
+                    taskRecycler.setAdapter(adapter);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<ZadachaItemDTO>> call, Throwable t) {
+                t.printStackTrace();
+            }
+        });
     }
 }
