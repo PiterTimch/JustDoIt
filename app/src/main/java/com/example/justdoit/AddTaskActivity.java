@@ -1,8 +1,10 @@
 package com.example.justdoit;
 
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
@@ -22,7 +24,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class AddTaskActivity extends AppCompatActivity {
+public class AddTaskActivity extends BaseActivity {
 
     private EditText titleInput;
     private ImageView imagePreview;
@@ -50,11 +52,9 @@ public class AddTaskActivity extends AppCompatActivity {
         findViewById(R.id.chooseImageButton)
                 .setOnClickListener(v -> imagePicker.launch("image/*"));
 
-        findViewById(R.id.saveTaskButton)
-                .setOnClickListener(v -> onSaveClick());
     }
 
-    private void onSaveClick() {
+    public void onSaveClick(View view) {
         String title = titleInput.getText().toString().trim();
 
         if (title.isEmpty()) {
@@ -95,12 +95,12 @@ public class AddTaskActivity extends AppCompatActivity {
                         if (response.isSuccessful() && response.body() != null) {
                             toast("Задача створена");
                             setResult(RESULT_OK);
-                            finish();
+                            goToMain();
                         } else if (response.isSuccessful() && response.body() == null) {
                             Log.d("AddTaskActivity", "Response successful but body is null. Code: " + response.code());
                             toast("Задача створена");
                             setResult(RESULT_OK);
-                            finish();
+                            goToMain();
                         } else {
                             String errorBody = "";
                             try {

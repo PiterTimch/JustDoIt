@@ -14,7 +14,7 @@ import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends BaseActivity {
 
     RecyclerView taskRecycler;
     TaskAdapter adapter;
@@ -64,17 +64,10 @@ public class MainActivity extends AppCompatActivity {
 
         callback.attachToRecyclerView(taskRecycler);
 
-        ActivityResultLauncher<Intent> addTaskLauncher = registerForActivityResult(
-                new ActivityResultContracts.StartActivityForResult(),
-                result -> {
-                    if (result.getResultCode() == RESULT_OK) {
-                        adapter.reload();
-                    }
-                }
-        );
-
         addButton.setOnClickListener(v ->
-                addTaskLauncher.launch(new Intent(MainActivity.this, AddTaskActivity.class))
+                {
+                    goToAddTask();
+                }
         );
     }
 }
