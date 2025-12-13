@@ -1,10 +1,12 @@
 package com.example.justdoit;
 
-import android.os.Bundle;
 import android.content.Intent;
+import android.os.Bundle;
 import android.view.View;
 
 import androidx.activity.EdgeToEdge;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
@@ -62,8 +64,17 @@ public class MainActivity extends AppCompatActivity {
 
         callback.attachToRecyclerView(taskRecycler);
 
+        ActivityResultLauncher<Intent> addTaskLauncher = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                result -> {
+                    if (result.getResultCode() == RESULT_OK) {
+                        adapter.reload();
+                    }
+                }
+        );
+
         addButton.setOnClickListener(v ->
-                startActivity(new Intent(MainActivity.this, AddTaskActivity.class))
+                addTaskLauncher.launch(new Intent(MainActivity.this, AddTaskActivity.class))
         );
     }
 }

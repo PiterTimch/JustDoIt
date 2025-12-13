@@ -2,27 +2,20 @@ package com.example.justdoit;
 
 import android.net.Uri;
 import android.os.Bundle;
-import android.widget.Button;
+import android.util.Log;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-import androidx.activity.EdgeToEdge;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 
+import com.example.justdoit.dto.zadachi.ZadachaItemDTO;
 import com.example.justdoit.network.RetrofitClient;
+import com.example.justdoit.utils.FileUtil;
+import com.example.justdoit.utils.UriRequestBody;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Objects;
-
-import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
 import retrofit2.Call;
@@ -31,121 +24,107 @@ import retrofit2.Response;
 
 public class AddTaskActivity extends AppCompatActivity {
 
+    private EditText titleInput;
     private ImageView imagePreview;
     private Uri selectedImageUri;
 
-    private final ActivityResultLauncher<String> imagePickerLauncher =
-            registerForActivityResult(new ActivityResultContracts.GetContent(), uri -> {
-                if (uri != null) {
-                    selectedImageUri = uri;
-                    imagePreview.setImageURI(uri);
-                }
-            });
+    private final ActivityResultLauncher<String> imagePicker =
+            registerForActivityResult(
+                    new ActivityResultContracts.GetContent(),
+                    uri -> {
+                        if (uri != null) {
+                            selectedImageUri = uri;
+                            imagePreview.setImageURI(uri);
+                        }
+                    }
+            );
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        EdgeToEdge.enable(this);
         setContentView(R.layout.activity_add_task);
 
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.addTaskRoot), (v, insets) -> {
-            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
-            return insets;
-        });
-
-        EditText titleInput = findViewById(R.id.taskTitleInput);
+        titleInput = findViewById(R.id.taskTitleInput);
         imagePreview = findViewById(R.id.taskImagePreview);
-        Button chooseImageButton = findViewById(R.id.chooseImageButton);
-        Button saveButton = findViewById(R.id.saveTaskButton);
 
-        chooseImageButton.setOnClickListener(v -> imagePickerLauncher.launch("image/*"));
+        findViewById(R.id.chooseImageButton)
+                .setOnClickListener(v -> imagePicker.launch("image/*"));
 
-        saveButton.setOnClickListener(v -> {
-            String title = titleInput.getText().toString().trim();
-            if (title.isEmpty()) {
-                Toast.makeText(this, "Введіть назву задачі", Toast.LENGTH_SHORT).show();
-                return;
-            }
-            if (selectedImageUri == null) {
-                Toast.makeText(this, "Додайте зображення", Toast.LENGTH_SHORT).show();
-                return;
-            }
-            uploadTask(title, selectedImageUri);
-        });
+        findViewById(R.id.saveTaskButton)
+                .setOnClickListener(v -> onSaveClick());
+    }
+
+    private void onSaveClick() {
+        String title = titleInput.getText().toString().trim();
+
+        if (title.isEmpty()) {
+            toast("Введіть назву задачі");
+            return;
+        }
+        if (selectedImageUri == null) {
+            toast("Додайте зображення");
+            return;
+        }
+
+        uploadTask(title, selectedImageUri);
     }
 
     private void uploadTask(String title, Uri imageUri) {
-        try {
-            String mimeType = getContentResolver().getType(imageUri);
-            if (mimeType == null) mimeType = "image/jpeg";
+        String mimeType = getContentResolver().getType(imageUri);
+        if (mimeType == null) mimeType = "image/jpeg";
 
-            byte[] imageBytes = readBytesFromUri(imageUri);
-            RequestBody imageBody = RequestBody.create(imageBytes, MediaType.parse(mimeType));
+        RequestBody titlePart =
+                RequestBody.create(title, MultipartBody.FORM);
 
-            String fileName = resolveFileName(imageUri);
-            MultipartBody.Part imagePart = MultipartBody.Part.createFormData(
-                    "Image",
-                    fileName,
-                    imageBody
-            );
+        RequestBody imageBody =
+                new UriRequestBody(this, imageUri, mimeType);
 
-            RequestBody namePart = RequestBody.create(title, MultipartBody.FORM);
+        MultipartBody.Part imagePart =
+                MultipartBody.Part.createFormData(
+                        "Image",
+                        FileUtil.getFileName(this, imageUri),
+                        imageBody
+                );
 
-            RetrofitClient.getInstance()
-                    .getZadachiApi()
-                    .create(namePart, imagePart)
-                    .enqueue(new Callback<com.example.justdoit.dto.zadachi.ZadachaItemDTO>() {
-                        @Override
-                        public void onResponse(Call<com.example.justdoit.dto.zadachi.ZadachaItemDTO> call, Response<com.example.justdoit.dto.zadachi.ZadachaItemDTO> response) {
-                            if (response.isSuccessful()) {
-                                Toast.makeText(AddTaskActivity.this, "Задача створена", Toast.LENGTH_SHORT).show();
-                                finish();
-                            } else {
-                                Toast.makeText(AddTaskActivity.this, "Помилка сервера: " + response.code(), Toast.LENGTH_SHORT).show();
+        RetrofitClient.getInstance()
+                .getZadachiApi()
+                .create(titlePart, imagePart)
+                .enqueue(new Callback<ZadachaItemDTO>() {
+                    @Override
+                    public void onResponse(Call<ZadachaItemDTO> call, Response<ZadachaItemDTO> response) {
+                        if (response.isSuccessful() && response.body() != null) {
+                            toast("Задача створена");
+                            setResult(RESULT_OK);
+                            finish();
+                        } else if (response.isSuccessful() && response.body() == null) {
+                            Log.d("AddTaskActivity", "Response successful but body is null. Code: " + response.code());
+                            toast("Задача створена");
+                            setResult(RESULT_OK);
+                            finish();
+                        } else {
+                            String errorBody = "";
+                            try {
+                                if (response.errorBody() != null) {
+                                    errorBody = response.errorBody().string();
+                                }
+                            } catch (Exception e) {
+                                e.printStackTrace();
                             }
+                            Log.e("AddTaskActivity", "Server error: " + response.code() + ", body: " + errorBody);
+                            toast("Помилка сервера: " + response.code());
                         }
-
-                        @Override
-                        public void onFailure(Call<com.example.justdoit.dto.zadachi.ZadachaItemDTO> call, Throwable t) {
-                            Toast.makeText(AddTaskActivity.this, "Мережна помилка: " + t.getMessage(), Toast.LENGTH_SHORT).show();
-                        }
-                    });
-        } catch (IOException e) {
-            Toast.makeText(this, "Не вдалося прочитати зображення", Toast.LENGTH_SHORT).show();
-        }
-    }
-
-    private byte[] readBytesFromUri(Uri uri) throws IOException {
-        try (InputStream inputStream = getContentResolver().openInputStream(uri);
-             ByteArrayOutputStream buffer = new ByteArrayOutputStream()) {
-            if (inputStream == null) throw new IOException("empty input stream");
-            byte[] data = new byte[4096];
-            int nRead;
-            while ((nRead = inputStream.read(data, 0, data.length)) != -1) {
-                buffer.write(data, 0, nRead);
-            }
-            return buffer.toByteArray();
-        }
-    }
-
-    private String resolveFileName(Uri uri) {
-        String name = null;
-        if ("content".equals(uri.getScheme())) {
-            try (android.database.Cursor cursor = getContentResolver()
-                    .query(uri, null, null, null, null)) {
-                if (cursor != null && cursor.moveToFirst()) {
-                    int index = cursor.getColumnIndex(android.provider.OpenableColumns.DISPLAY_NAME);
-                    if (index >= 0) {
-                        name = cursor.getString(index);
                     }
-                }
-            }
+
+                    @Override
+                    public void onFailure(Call<ZadachaItemDTO> call, Throwable t) {
+                        Log.e("AddTaskActivity", "onFailure type: " + t.getClass().getName());
+                        Log.e("AddTaskActivity", "message: " + t.getMessage(), t);
+                        toast("Помилка: " + t.getMessage());
+                    }
+                });
         }
-        if (name == null || name.isEmpty()) {
-            name = "upload_" + System.currentTimeMillis() + ".jpg";
-        }
-        return name;
+
+    private void toast(String text) {
+        Toast.makeText(this, text, Toast.LENGTH_SHORT).show();
     }
 }
-
