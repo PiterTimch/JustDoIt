@@ -1,6 +1,5 @@
 package com.example.justdoit;
 
-import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
@@ -13,15 +12,12 @@ import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
-import androidx.appcompat.app.AppCompatActivity;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.example.justdoit.config.Config;
 import com.example.justdoit.dto.zadachi.ZadachaItemDTO;
 import com.example.justdoit.network.RetrofitClient;
-import com.example.justdoit.utils.FileUtil;
-import com.example.justdoit.utils.UriRequestBody;
 
 import java.io.File;
 
@@ -89,16 +85,6 @@ public class AddTaskActivity extends BaseActivity {
         RequestBody titlePart =
                 RequestBody.create(title, MultipartBody.FORM);
 
-//        RequestBody imageBody =
-//                new UriRequestBody(this, imageUri, mimeType);
-
-//        MultipartBody.Part imagePart =
-//                MultipartBody.Part.createFormData(
-//                        "Image",
-//                        FileUtil.getFileName(this, imageUri),
-//                        imageBody
-//                );
-
         MultipartBody.Part imagePart = null;
         if(imageUri != null) {
             String imagePath = getImagePath(imageUri);
@@ -117,14 +103,10 @@ public class AddTaskActivity extends BaseActivity {
                     public void onResponse(Call<ZadachaItemDTO> call, Response<ZadachaItemDTO> response) {
                         if (response.isSuccessful() && response.body() != null) {
                             toast("Задача створена");
-                            //setResult(RESULT_OK);
-//                            finish();
                             goToMain();
                         } else if (response.isSuccessful() && response.body() == null) {
                             Log.d("AddTaskActivity", "Response successful but body is null. Code: " + response.code());
                             toast("Задача створена");
-                            //setResult(RESULT_OK);
-//                            finish();
                             goToMain();
                         } else {
                             String errorBody = "";

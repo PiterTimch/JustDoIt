@@ -1,21 +1,31 @@
 package com.example.justdoit.dto.zadachi;
 
 public class ZadachaItemDTO {
-    private int id;
+    private long id;
     private String name;
     private String image;
 
-    public ZadachaItemDTO(int id, String name, String image) {
+    private boolean selected = false;
+
+    public ZadachaItemDTO(long id, String name, String image) {
         this.id = id;
         this.name = name;
         this.image = image;
     }
 
-    public int getId() {
+    public boolean isSelected() {
+        return selected;
+    }
+
+    public void setSelected(boolean selected) {
+        this.selected = selected;
+    }
+
+    public long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(long id) {
         this.id = id;
     }
 

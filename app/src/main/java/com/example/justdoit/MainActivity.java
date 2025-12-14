@@ -12,6 +12,7 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.ItemTouchHelper;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.justdoit.dto.zadachi.ZadachaItemDTO;
@@ -28,6 +29,7 @@ public class MainActivity extends BaseActivity {
     RecyclerView taskRecycler;
     TaskAdapter adapter;
     View addButton;
+    View deleteButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,46 +37,23 @@ public class MainActivity extends BaseActivity {
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
 
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
-            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
-            return insets;
-        });
-
         taskRecycler = findViewById(R.id.taskRecycler);
         addButton = findViewById(R.id.addButton);
-        taskRecycler.setLayoutManager(
-                new androidx.recyclerview.widget.LinearLayoutManager(this)
-        );
+        deleteButton = findViewById(R.id.deleteButton);
 
-        ItemTouchHelper callback = new ItemTouchHelper(
-                new ItemTouchHelper.SimpleCallback(
-                        ItemTouchHelper.UP | ItemTouchHelper.DOWN, 0) {
+        taskRecycler.setLayoutManager(new LinearLayoutManager(this));
 
-                    @Override
-                    public boolean onMove(RecyclerView recyclerView,
-                                          RecyclerView.ViewHolder viewHolder,
-                                          RecyclerView.ViewHolder target) {
+        addButton.setOnClickListener(v -> goToAddTask());
 
-                        int from = viewHolder.getAdapterPosition();
-                        int to = target.getAdapterPosition();
-                        adapter.swap(from, to);
-                        return true;
-                    }
-
-                    @Override
-                    public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
-                        // тут короче буде зміна пріорітету, я так думаю
-                    }
+        deleteButton.setOnClickListener(v -> {
+            if (adapter != null) {
+                adapter.deleteSelectedItems(() -> {
+                    deleteButton.setVisibility(View.GONE);
+                    loadTasks();
                 });
+            }
+        });
 
-        callback.attachToRecyclerView(taskRecycler);
-
-        addButton.setOnClickListener(v ->
-                {
-                    goToAddTask();
-                }
-        );
 
         loadTasks();
     }
@@ -84,7 +63,9 @@ public class MainActivity extends BaseActivity {
             @Override
             public void onResponse(Call<List<ZadachaItemDTO>> call, Response<List<ZadachaItemDTO>> response) {
                 if (response.isSuccessful() && response.body() != null) {
-                    adapter = new TaskAdapter(response.body());
+                    adapter = new TaskAdapter(response.body(), hasSelected -> {
+                        deleteButton.setVisibility(hasSelected ? View.VISIBLE : View.GONE);
+                    });
                     taskRecycler.setAdapter(adapter);
                 }
             }
@@ -96,3 +77,4 @@ public class MainActivity extends BaseActivity {
         });
     }
 }
+

@@ -25,10 +25,12 @@ import retrofit2.Response;
 
 public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder> {
 
-    List<ZadachaItemDTO> taskList = new ArrayList<>();
+    private List<ZadachaItemDTO> taskList = new ArrayList<>();
+    private OnSelectionChangedListener selectionChangedListener;
 
-    public TaskAdapter(List<ZadachaItemDTO> list) {
+    public TaskAdapter(List<ZadachaItemDTO> list, OnSelectionChangedListener listener) {
         taskList = list;
+        this.selectionChangedListener = listener;
     }
 
     @NonNull
@@ -43,10 +45,14 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder
     public void onBindViewHolder(@NonNull TaskViewHolder holder, int position) {
         ZadachaItemDTO item = taskList.get(position);
         holder.taskText.setText(item.getName());
+        holder.taskCheckBox.setChecked(item.isSelected());
 
-        Glide.with(holder.itemView.getContext())
-                .load(Config.IMAGES_URL + "400_" + item.getImage())
-                .into(holder.taskImage);
+        holder.taskCheckBox.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            item.setSelected(isChecked);
+            if (selectionChangedListener != null) {
+                selectionChangedListener.onSelectionChanged(hasSelectedItems());
+            }
+        });
     }
 
     @Override
@@ -54,31 +60,47 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder
         return taskList.size();
     }
 
-    public void swap(int from, int to) {
-        Collections.swap(taskList, from, to);
-        notifyItemMoved(from, to);
+    public boolean hasSelectedItems() {
+        for (ZadachaItemDTO item : taskList) {
+            if (item.isSelected()) return true;
+        }
+        return false;
     }
 
-    public void reload() {
-        taskList.clear();
-        RetrofitClient.getInstance().getZadachiApi().list().enqueue(new Callback<List<ZadachaItemDTO>>() {
-            @Override
-            public void onResponse(Call<List<ZadachaItemDTO>> call, Response<List<ZadachaItemDTO>> response) {
-                if (response.isSuccessful() && response.body() != null) {
-                    taskList.addAll(response.body());
-                    notifyDataSetChanged();
-                }
+    public void deleteSelectedItems(Runnable onSuccess) {
+        List<Long> toDelete = new ArrayList<>();
+        for (ZadachaItemDTO item : taskList) {
+            if (item.isSelected()) {
+                toDelete.add((long) item.getId());
             }
+        }
 
-            @Override
-            public void onFailure(Call<List<ZadachaItemDTO>> call, Throwable t) {
-                t.printStackTrace();
-            }
-        });
+        if (toDelete.isEmpty()) return;
+
+        RetrofitClient.getInstance().getZadachiApi().deleteRange(toDelete)
+                .enqueue(new Callback<Void>() {
+                    @Override
+                    public void onResponse(Call<Void> call, Response<Void> response) {
+                        if (response.isSuccessful()) {
+                            if (onSuccess != null) onSuccess.run();
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<Void> call, Throwable t) {
+                        t.printStackTrace();
+                    }
+                });
+    }
+
+
+
+
+    public interface OnSelectionChangedListener {
+        void onSelectionChanged(boolean hasSelected);
     }
 
     static class TaskViewHolder extends RecyclerView.ViewHolder {
-
         TextView taskText;
         CheckBox taskCheckBox;
         ImageView taskImage;
@@ -90,5 +112,5 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder
             taskImage = itemView.findViewById(R.id.taskImage);
         }
     }
-
 }
+

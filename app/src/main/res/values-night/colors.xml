@@ -6,4 +6,5 @@
     <color name="secondaryTextColor">#b6d0f0</color>
     <color name="taskBgColor">#061929</color>
     <color name="imageBorderColor">#5cbdf2</color>
+    <color name="removeColor">#8f2154</color>
 </resources>
