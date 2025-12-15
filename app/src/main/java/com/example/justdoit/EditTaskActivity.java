@@ -18,6 +18,8 @@ import com.bumptech.glide.request.RequestOptions;
 import com.example.justdoit.config.Config;
 import com.example.justdoit.dto.zadachi.ZadachaItemDTO;
 import com.example.justdoit.network.RetrofitClient;
+import com.example.justdoit.utils.FileUtil;
+import com.example.justdoit.utils.MyLogger;
 
 import java.io.File;
 
@@ -80,11 +82,11 @@ public class EditTaskActivity extends BaseActivity {
         String title = titleInput.getText().toString().trim();
 
         if (title.isEmpty()) {
-            toast("Введіть назву задачі");
+            MyLogger.toast(EditTaskActivity.this, "Введіть назву задачі");
             return;
         }
         if (taskId == -1) {
-            toast("Немає ідентифікатора задачі");
+            MyLogger.toast(EditTaskActivity.this, "Немає ідентифікатора задачі");
             return;
         }
 
@@ -100,7 +102,7 @@ public class EditTaskActivity extends BaseActivity {
 
         MultipartBody.Part imagePart = null;
         if(imageUri != null) {
-            String imagePath = getImagePath(imageUri);
+            String imagePath = FileUtil.getImagePath(this, imageUri);
             if (imagePath != null) {
                 File file = new File(imagePath);
                 RequestBody requestBody = RequestBody.create(MediaType.parse("multipart/form-data"), file);
@@ -114,7 +116,7 @@ public class EditTaskActivity extends BaseActivity {
                 .enqueue(new Callback<Void>() {
                     @Override
                     public void onResponse(Call<Void> call, Response<Void> response) {
-                        toast("Задача оновлена");
+                        MyLogger.toast(EditTaskActivity.this, "Задача оновлена");
                         goToMain();
                     }
 
@@ -122,27 +124,9 @@ public class EditTaskActivity extends BaseActivity {
                     public void onFailure(Call<Void> call, Throwable t) {
                         Log.e("EditTaskActivity", "onFailure type: " + t.getClass().getName());
                         Log.e("EditTaskActivity", "message: " + t.getMessage(), t);
-                        toast("Помилка: " + t.getMessage());
+                        MyLogger.toast(EditTaskActivity.this, "Помилка: " + t.getMessage());
                     }
                 });
-    }
-
-    private String getImagePath(Uri uri) {
-        String[] projection = {MediaStore.Images.Media.DATA};
-        Cursor cursor = getContentResolver().query(uri, projection, null, null, null);
-
-        if (cursor != null) {
-            int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
-            cursor.moveToFirst();
-            String imagePath = cursor.getString(column_index);
-            cursor.close();
-            return imagePath;
-        }
-
-        return null;
-    }
-    private void toast(String text) {
-        Toast.makeText(this, text, Toast.LENGTH_SHORT).show();
     }
 }
 

@@ -18,6 +18,8 @@ import com.bumptech.glide.request.RequestOptions;
 import com.example.justdoit.config.Config;
 import com.example.justdoit.dto.zadachi.ZadachaItemDTO;
 import com.example.justdoit.network.RetrofitClient;
+import com.example.justdoit.utils.FileUtil;
+import com.example.justdoit.utils.MyLogger;
 
 import java.io.File;
 
@@ -67,11 +69,11 @@ public class AddTaskActivity extends BaseActivity {
         String title = titleInput.getText().toString().trim();
 
         if (title.isEmpty()) {
-            toast("Введіть назву задачі");
+            MyLogger.toast(AddTaskActivity.this, "Введіть назву задачі");
             return;
         }
         if (selectedImageUri == null) {
-            toast("Додайте зображення");
+            MyLogger.toast(AddTaskActivity.this, "Додайте зображення");
             return;
         }
 
@@ -87,7 +89,7 @@ public class AddTaskActivity extends BaseActivity {
 
         MultipartBody.Part imagePart = null;
         if(imageUri != null) {
-            String imagePath = getImagePath(imageUri);
+            String imagePath = FileUtil.getImagePath(this, imageUri);
             if (imagePath != null) {
                 File file = new File(imagePath);
                 RequestBody requestBody = RequestBody.create(MediaType.parse("multipart/form-data"), file);
@@ -102,11 +104,11 @@ public class AddTaskActivity extends BaseActivity {
                     @Override
                     public void onResponse(Call<ZadachaItemDTO> call, Response<ZadachaItemDTO> response) {
                         if (response.isSuccessful() && response.body() != null) {
-                            toast("Задача створена");
+                            MyLogger.toast(AddTaskActivity.this, "Задача створена");
                             goToMain();
                         } else if (response.isSuccessful() && response.body() == null) {
                             Log.d("AddTaskActivity", "Response successful but body is null. Code: " + response.code());
-                            toast("Задача створена");
+                            MyLogger.toast(AddTaskActivity.this, "Задача створена");
                             goToMain();
                         } else {
                             String errorBody = "";
@@ -118,7 +120,7 @@ public class AddTaskActivity extends BaseActivity {
                                 e.printStackTrace();
                             }
                             Log.e("AddTaskActivity", "Server error: " + response.code() + ", body: " + errorBody);
-                            toast("Помилка сервера: " + response.code());
+                            MyLogger.toast(AddTaskActivity.this, "Помилка сервера: " + response.code());
                         }
                     }
 
@@ -126,27 +128,8 @@ public class AddTaskActivity extends BaseActivity {
                     public void onFailure(Call<ZadachaItemDTO> call, Throwable t) {
                         Log.e("AddTaskActivity", "onFailure type: " + t.getClass().getName());
                         Log.e("AddTaskActivity", "message: " + t.getMessage(), t);
-                        toast("Помилка: " + t.getMessage());
+                        MyLogger.toast(AddTaskActivity.this, "Помилка: " + t.getMessage());
                     }
                 });
-    }
-
-
-    private String getImagePath(Uri uri) {
-        String[] projection = {MediaStore.Images.Media.DATA};
-        Cursor cursor = getContentResolver().query(uri, projection, null, null, null);
-
-        if (cursor != null) {
-            int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
-            cursor.moveToFirst();
-            String imagePath = cursor.getString(column_index);
-            cursor.close();
-            return imagePath;
-        }
-
-        return null;
-    }
-    private void toast(String text) {
-        Toast.makeText(this, text, Toast.LENGTH_SHORT).show();
     }
 }
