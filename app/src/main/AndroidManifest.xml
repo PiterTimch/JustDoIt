@@ -16,6 +16,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.JustDoIt">
         <activity
+            android:name=".EditTaskActivity"
+            android:exported="false" />
+        <activity
             android:name=".AddTaskActivity"
             android:exported="false" />
         <activity

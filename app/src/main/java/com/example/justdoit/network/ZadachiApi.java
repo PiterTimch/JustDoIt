@@ -13,15 +13,25 @@ import retrofit2.http.GET;
 import retrofit2.http.HTTP;
 import retrofit2.http.Multipart;
 import retrofit2.http.POST;
+import retrofit2.http.PUT;
 import retrofit2.http.Part;
+import retrofit2.http.Path;
 
 public interface ZadachiApi {
-    @GET("/zadachi")
+    @GET("/Zadachi")
     Call<List<ZadachaItemDTO>> list();
 
     @Multipart
     @POST("/Zadachi")
     Call<ZadachaItemDTO> create(
+            @Part("Name") RequestBody name,
+            @Part MultipartBody.Part image
+    );
+
+    @Multipart
+    @PUT("/Zadachi")
+    Call<Void> update(
+            @Part("id") long id,
             @Part("Name") RequestBody name,
             @Part MultipartBody.Part image
     );

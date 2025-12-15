@@ -1,5 +1,6 @@
 package com.example.justdoit;
 
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,7 +17,6 @@ import com.example.justdoit.dto.zadachi.ZadachaItemDTO;
 import com.example.justdoit.network.RetrofitClient;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import retrofit2.Call;
@@ -46,12 +46,23 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder
         ZadachaItemDTO item = taskList.get(position);
         holder.taskText.setText(item.getName());
         holder.taskCheckBox.setChecked(item.isSelected());
+        Glide.with(holder.itemView.getContext())
+                .load(Config.IMAGES_URL + "200_" + item.getImage())
+                .into(holder.taskImage);
 
         holder.taskCheckBox.setOnCheckedChangeListener((buttonView, isChecked) -> {
             item.setSelected(isChecked);
             if (selectionChangedListener != null) {
                 selectionChangedListener.onSelectionChanged(hasSelectedItems());
             }
+        });
+
+        holder.itemView.setOnClickListener(v -> {
+            Intent intent = new Intent(v.getContext(), EditTaskActivity.class);
+            intent.putExtra("task_id", item.getId());
+            intent.putExtra("task_name", item.getName());
+            intent.putExtra("task_image", item.getImage());
+            v.getContext().startActivity(intent);
         });
     }
 
@@ -104,7 +115,6 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder
         TextView taskText;
         CheckBox taskCheckBox;
         ImageView taskImage;
-
         public TaskViewHolder(@NonNull View itemView) {
             super(itemView);
             taskText = itemView.findViewById(R.id.taskText);
