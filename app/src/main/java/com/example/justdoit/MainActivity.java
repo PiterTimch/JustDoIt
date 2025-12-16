@@ -17,6 +17,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.justdoit.dto.zadachi.ZadachaItemDTO;
 import com.example.justdoit.network.RetrofitClient;
+import com.example.justdoit.utils.CommonUtils;
 import com.example.justdoit.utils.MyLogger;
 
 import java.util.List;
@@ -55,7 +56,7 @@ public class MainActivity extends BaseActivity {
             }
         });
 
-
+        CommonUtils.showLoading();
         loadTasks();
     }
 
@@ -68,6 +69,7 @@ public class MainActivity extends BaseActivity {
                         deleteButton.setVisibility(hasSelected ? View.VISIBLE : View.GONE);
                     }, MainActivity.this::onClickEditZadacha);
                     taskRecycler.setAdapter(adapter);
+                    CommonUtils.hideLoading();
                 }
             }
 

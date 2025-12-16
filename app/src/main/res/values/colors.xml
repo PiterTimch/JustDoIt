@@ -7,4 +7,6 @@
     <color name="taskBgColor">#416e87</color>
     <color name="imageBorderColor">#01598a</color>
     <color name="removeColor">#f54295</color>
+    <color name="purple_700">#FF3700B3</color>
+    <color name="black_effective">#2a2a2a</color>
 </resources>
