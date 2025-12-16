@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -15,6 +16,7 @@ import com.bumptech.glide.Glide;
 import com.example.justdoit.config.Config;
 import com.example.justdoit.dto.zadachi.ZadachaItemDTO;
 import com.example.justdoit.network.RetrofitClient;
+import com.example.justdoit.zadacha.OnItemClickZadacha;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,9 +30,12 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder
     private List<ZadachaItemDTO> taskList = new ArrayList<>();
     private OnSelectionChangedListener selectionChangedListener;
 
-    public TaskAdapter(List<ZadachaItemDTO> list, OnSelectionChangedListener listener) {
+    private OnItemClickZadacha onEditListener;
+
+    public TaskAdapter(List<ZadachaItemDTO> list, OnSelectionChangedListener listener, OnItemClickZadacha onEditListener) {
         taskList = list;
         this.selectionChangedListener = listener;
+        this.onEditListener = onEditListener;
     }
 
     @NonNull
@@ -57,13 +62,7 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder
             }
         });
 
-        holder.itemView.setOnClickListener(v -> {
-            Intent intent = new Intent(v.getContext(), EditTaskActivity.class);
-            intent.putExtra("task_id", item.getId());
-            intent.putExtra("task_name", item.getName());
-            intent.putExtra("task_image", item.getImage());
-            v.getContext().startActivity(intent);
-        });
+        holder.editButton.setOnClickListener(x -> onEditListener.onItemClick(item));
     }
 
     @Override
@@ -115,11 +114,13 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder
         TextView taskText;
         CheckBox taskCheckBox;
         ImageView taskImage;
+        Button editButton;
         public TaskViewHolder(@NonNull View itemView) {
             super(itemView);
             taskText = itemView.findViewById(R.id.taskText);
             taskCheckBox = itemView.findViewById(R.id.taskCheckBox);
             taskImage = itemView.findViewById(R.id.taskImage);
+            editButton = itemView.findViewById(R.id.edit_btn);
         }
     }
 }

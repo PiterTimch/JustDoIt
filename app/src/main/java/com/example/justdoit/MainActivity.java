@@ -17,6 +17,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.justdoit.dto.zadachi.ZadachaItemDTO;
 import com.example.justdoit.network.RetrofitClient;
+import com.example.justdoit.utils.MyLogger;
 
 import java.util.List;
 
@@ -65,7 +66,7 @@ public class MainActivity extends BaseActivity {
                 if (response.isSuccessful() && response.body() != null) {
                     adapter = new TaskAdapter(response.body(), hasSelected -> {
                         deleteButton.setVisibility(hasSelected ? View.VISIBLE : View.GONE);
-                    });
+                    }, MainActivity.this::onClickEditZadacha);
                     taskRecycler.setAdapter(adapter);
                 }
             }
@@ -75,6 +76,14 @@ public class MainActivity extends BaseActivity {
                 t.printStackTrace();
             }
         });
+    }
+
+    private void onClickEditZadacha(ZadachaItemDTO zadacha) {
+        Intent intent = new Intent(this, EditTaskActivity.class);
+        intent.putExtra("task_id", zadacha.getId());
+        intent.putExtra("task_name", zadacha.getName());
+        intent.putExtra("task_image", zadacha.getImage());
+        this.startActivity(intent);
     }
 }
 
