@@ -79,11 +79,11 @@ public class EditTaskActivity extends BaseActivity {
         String title = titleInput.getText().toString().trim();
 
         if (title.isEmpty()) {
-            MyLogger.toast(EditTaskActivity.this, "Введіть назву задачі");
+            MyLogger.toast("Введіть назву задачі");
             return;
         }
         if (taskId == -1) {
-            MyLogger.toast(EditTaskActivity.this, "Немає ідентифікатора задачі");
+            MyLogger.toast("Немає ідентифікатора задачі");
             return;
         }
 
@@ -113,7 +113,7 @@ public class EditTaskActivity extends BaseActivity {
                 .enqueue(new Callback<Void>() {
                     @Override
                     public void onResponse(Call<Void> call, Response<Void> response) {
-                        MyLogger.toast(EditTaskActivity.this, "Задача оновлена");
+                        MyLogger.toast("Задача оновлена");
                         goToMain();
                     }
 
@@ -121,7 +121,7 @@ public class EditTaskActivity extends BaseActivity {
                     public void onFailure(Call<Void> call, Throwable t) {
                         Log.e("EditTaskActivity", "onFailure type: " + t.getClass().getName());
                         Log.e("EditTaskActivity", "message: " + t.getMessage(), t);
-                        MyLogger.toast(EditTaskActivity.this, "Помилка: " + t.getMessage());
+                        MyLogger.toast("Помилка: " + t.getMessage());
                     }
                 });
     }

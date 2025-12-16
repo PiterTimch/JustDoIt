@@ -66,11 +66,11 @@ public class AddTaskActivity extends BaseActivity {
         String title = titleInput.getText().toString().trim();
 
         if (title.isEmpty()) {
-            MyLogger.toast(AddTaskActivity.this, "Введіть назву задачі");
+            MyLogger.toast("Введіть назву задачі");
             return;
         }
         if (selectedImageUri == null) {
-            MyLogger.toast(AddTaskActivity.this, "Додайте зображення");
+            MyLogger.toast("Додайте зображення");
             return;
         }
 
@@ -101,11 +101,11 @@ public class AddTaskActivity extends BaseActivity {
                     @Override
                     public void onResponse(Call<ZadachaItemDTO> call, Response<ZadachaItemDTO> response) {
                         if (response.isSuccessful() && response.body() != null) {
-                            MyLogger.toast(AddTaskActivity.this, "Задача створена");
+                            MyLogger.toast("Задача створена");
                             goToMain();
                         } else if (response.isSuccessful() && response.body() == null) {
                             Log.d("AddTaskActivity", "Response successful but body is null. Code: " + response.code());
-                            MyLogger.toast(AddTaskActivity.this, "Задача створена");
+                            MyLogger.toast("Задача створена");
                             goToMain();
                         } else {
                             String errorBody = "";
@@ -117,7 +117,7 @@ public class AddTaskActivity extends BaseActivity {
                                 e.printStackTrace();
                             }
                             Log.e("AddTaskActivity", "Server error: " + response.code() + ", body: " + errorBody);
-                            MyLogger.toast(AddTaskActivity.this, "Помилка сервера: " + response.code());
+                            MyLogger.toast("Помилка сервера: " + response.code());
                         }
                     }
 
@@ -125,7 +125,7 @@ public class AddTaskActivity extends BaseActivity {
                     public void onFailure(Call<ZadachaItemDTO> call, Throwable t) {
                         Log.e("AddTaskActivity", "onFailure type: " + t.getClass().getName());
                         Log.e("AddTaskActivity", "message: " + t.getMessage(), t);
-                        MyLogger.toast(AddTaskActivity.this, "Помилка: " + t.getMessage());
+                        MyLogger.toast("Помилка: " + t.getMessage());
                     }
                 });
     }
