@@ -41,6 +41,11 @@ public class BaseActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
+    protected void goToRegistration() {
+        Intent intent = new Intent(BaseActivity.this, MainActivity.class);
+        startActivity(intent);
+    }
+
     protected void goToAddTask() {
         Intent intent = new Intent(BaseActivity.this, AddTaskActivity.class);
         startActivity(intent);

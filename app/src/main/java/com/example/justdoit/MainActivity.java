@@ -32,6 +32,7 @@ public class MainActivity extends BaseActivity {
     TaskAdapter adapter;
     View addButton;
     View deleteButton;
+    View accountButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,6 +47,8 @@ public class MainActivity extends BaseActivity {
         taskRecycler.setLayoutManager(new LinearLayoutManager(this));
 
         addButton.setOnClickListener(v -> goToAddTask());
+
+        accountButton.setOnClickListener(v -> goToRegistration());
 
         deleteButton.setOnClickListener(v -> {
             if (adapter != null) {
