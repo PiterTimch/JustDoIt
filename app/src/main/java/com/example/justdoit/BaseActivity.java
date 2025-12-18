@@ -6,6 +6,9 @@ import android.view.MenuItem;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.justdoit.screens.AddTaskActivity;
+import com.example.justdoit.screens.MainActivity;
+import com.example.justdoit.screens.RegisterActivity;
 import com.example.justdoit.utils.CommonUtils;
 
 public class BaseActivity extends AppCompatActivity {

@@ -1,23 +1,19 @@
-package com.example.justdoit;
+package com.example.justdoit.screens;
 
 import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
 
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
-
+import com.example.justdoit.BaseActivity;
+import com.example.justdoit.R;
 import com.example.justdoit.network.RetrofitClient;
 import com.example.justdoit.utils.CommonUtils;
-import com.example.justdoit.utils.FileUtil;
 import com.example.justdoit.utils.ImagePickerCropper;
 import com.example.justdoit.utils.MyLogger;
 
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.InputStream;
 
 import okhttp3.MediaType;

@@ -1,24 +1,19 @@
-package com.example.justdoit;
+package com.example.justdoit.screens;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 
 import androidx.activity.EdgeToEdge;
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
-import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.justdoit.BaseActivity;
+import com.example.justdoit.R;
+import com.example.justdoit.TaskAdapter;
 import com.example.justdoit.dto.zadachi.ZadachaItemDTO;
 import com.example.justdoit.network.RetrofitClient;
 import com.example.justdoit.utils.CommonUtils;
-import com.example.justdoit.utils.MyLogger;
 
 import java.util.List;
 

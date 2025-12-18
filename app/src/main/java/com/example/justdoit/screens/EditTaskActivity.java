@@ -1,4 +1,4 @@
-package com.example.justdoit;
+package com.example.justdoit.screens;
 
 import android.net.Uri;
 import android.os.Bundle;
@@ -12,8 +12,9 @@ import androidx.activity.result.contract.ActivityResultContracts;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
+import com.example.justdoit.BaseActivity;
+import com.example.justdoit.R;
 import com.example.justdoit.config.Config;
-import com.example.justdoit.dto.zadachi.ZadachaItemDTO;
 import com.example.justdoit.network.RetrofitClient;
 import com.example.justdoit.utils.FileUtil;
 import com.example.justdoit.utils.MyLogger;
