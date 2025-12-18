@@ -10,7 +10,6 @@
     android:background="@color/backgroundColor"
     tools:context=".RegisterActivity">
 
-    <!-- Заголовок -->
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -21,7 +20,6 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
-    <!-- Імʼя -->
     <EditText
         android:id="@+id/firstName"
         android:layout_width="0dp"
@@ -36,7 +34,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginTop="56dp" />
 
-    <!-- Прізвище -->
     <EditText
         android:id="@+id/lastName"
         android:layout_width="0dp"
@@ -51,7 +48,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginTop="12dp" />
 
-    <!-- Email -->
     <EditText
         android:id="@+id/email"
         android:layout_width="0dp"
@@ -67,7 +63,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginTop="12dp" />
 
-    <!-- Пароль -->
     <EditText
         android:id="@+id/password"
         android:layout_width="0dp"
@@ -83,7 +78,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginTop="12dp" />
 
-    <!-- Превʼю фото -->
     <ImageView
         android:id="@+id/imagePreview"
         android:layout_width="0dp"
@@ -97,7 +91,6 @@
         android:layout_marginTop="16dp"
         tools:src="@drawable/ic_launcher_foreground" />
 
-    <!-- Вибір фото -->
     <Button
         android:id="@+id/selectImage"
         android:layout_width="0dp"
@@ -110,7 +103,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginTop="16dp" />
 
-    <!-- Реєстрація -->
     <Button
         android:id="@+id/registerBtn"
         android:layout_width="0dp"

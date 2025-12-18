@@ -13,9 +13,12 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import com.example.justdoit.network.RetrofitClient;
 import com.example.justdoit.utils.CommonUtils;
 import com.example.justdoit.utils.FileUtil;
+import com.example.justdoit.utils.ImagePickerCropper;
 import com.example.justdoit.utils.MyLogger;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.InputStream;
 
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
@@ -30,16 +33,35 @@ public class RegisterActivity extends BaseActivity {
     private ImageView imagePreview;
     private Uri selectedImageUri;
 
-    private final ActivityResultLauncher<String> imagePicker =
-            registerForActivityResult(
-                    new ActivityResultContracts.GetContent(),
-                    uri -> {
-                        if (uri != null) {
-                            selectedImageUri = uri;
-                            imagePreview.setImageURI(uri);
-                        }
-                    }
+    private ImagePickerCropper imageCropper;
+
+    private MultipartBody.Part createImagePart(Uri uri) {
+        try {
+            InputStream is = getContentResolver().openInputStream(uri);
+
+            ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+            byte[] data = new byte[8192];
+            int n;
+            while ((n = is.read(data)) != -1) {
+                buffer.write(data, 0, n);
+            }
+
+            RequestBody body = RequestBody.create(
+                    MediaType.parse("image/jpeg"),
+                    buffer.toByteArray()
             );
+
+            return MultipartBody.Part.createFormData(
+                    "ImageFile",
+                    "avatar.jpg",
+                    body
+            );
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,8 +74,14 @@ public class RegisterActivity extends BaseActivity {
         passwordInput  = findViewById(R.id.password);
         imagePreview   = findViewById(R.id.imagePreview);
 
-        findViewById(R.id.selectImage)
-                .setOnClickListener(v -> imagePicker.launch("image/*"));
+        imageCropper = new ImagePickerCropper(this);
+
+        findViewById(R.id.selectImage).setOnClickListener(v ->
+                imageCropper.pick(uri -> {
+                    selectedImageUri = uri;
+                    imagePreview.setImageURI(uri);
+                })
+        );
     }
 
     public void onRegisterClick(View view) {
@@ -81,15 +109,7 @@ public class RegisterActivity extends BaseActivity {
         RequestBody emPart = RequestBody.create(em, MultipartBody.FORM);
         RequestBody pwPart = RequestBody.create(pw, MultipartBody.FORM);
 
-        MultipartBody.Part imagePart = null;
-        String path = FileUtil.getImagePath(this, uri);
-        if (path != null) {
-            File file = new File(path);
-            RequestBody body =
-                    RequestBody.create(MediaType.parse("multipart/form-data"), file);
-            imagePart = MultipartBody.Part.createFormData(
-                    "ImageFile", file.getName(), body);
-        }
+        MultipartBody.Part imagePart = createImagePart(uri);
 
         CommonUtils.showLoading();
 
