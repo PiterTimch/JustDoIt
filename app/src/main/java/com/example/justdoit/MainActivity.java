@@ -43,6 +43,7 @@ public class MainActivity extends BaseActivity {
         taskRecycler = findViewById(R.id.taskRecycler);
         addButton = findViewById(R.id.addButton);
         deleteButton = findViewById(R.id.deleteButton);
+        accountButton = findViewById(R.id.accountButton);
 
         taskRecycler.setLayoutManager(new LinearLayoutManager(this));
 

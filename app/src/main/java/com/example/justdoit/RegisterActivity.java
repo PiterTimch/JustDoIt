@@ -11,6 +11,7 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 
 import com.example.justdoit.network.RetrofitClient;
+import com.example.justdoit.utils.CommonUtils;
 import com.example.justdoit.utils.FileUtil;
 import com.example.justdoit.utils.MyLogger;
 
@@ -90,6 +91,8 @@ public class RegisterActivity extends BaseActivity {
                     "ImageFile", file.getName(), body);
         }
 
+        CommonUtils.showLoading();
+
         RetrofitClient.getInstance()
                 .getAuthApi()
                 .register(fnPart, lnPart, emPart, pwPart, imagePart)
@@ -102,11 +105,14 @@ public class RegisterActivity extends BaseActivity {
                         } else {
                             MyLogger.toast("Помилка сервера: " + response.code());
                         }
+
+                        CommonUtils.hideLoading();
                     }
 
                     @Override
                     public void onFailure(Call<Void> call, Throwable t) {
                         MyLogger.toast("Помилка: " + t.getMessage());
+                        CommonUtils.hideLoading();
                     }
                 });
     }
