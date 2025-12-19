@@ -1,14 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/editTaskRoot"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:padding="16dp"
+    android:paddingTop="?attr/actionBarSize"
     android:background="@color/backgroundColor"
-    tools:context=".screens.EditTaskActivity"
-    android:paddingTop="?attr/actionBarSize">
+    tools:context=".screens.EditTaskActivity">
 
     <TextView
         android:id="@+id/editTaskTitle"
@@ -21,20 +22,21 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
-    <EditText
-        android:id="@+id/editTaskTitleInput"
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/editTaskTitleLayout"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:hint="Назва задачі"
-        android:padding="12dp"
-        android:background="@drawable/task_bg"
-        android:textColor="@color/titleTextColor"
-        android:textColorHint="@color/titleTextColor"
         app:layout_constraintTop_toBottomOf="@id/editTaskTitle"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0"
-        android:layout_marginTop="16dp" />
+        android:layout_marginTop="16dp">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/editTaskTitleInput"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+    </com.google.android.material.textfield.TextInputLayout>
 
     <ImageView
         android:id="@+id/editTaskImagePreview"
@@ -43,7 +45,7 @@
         android:scaleType="centerCrop"
         android:background="@drawable/task_bg"
         android:contentDescription="Task image preview"
-        app:layout_constraintTop_toBottomOf="@id/editTaskTitleInput"
+        app:layout_constraintTop_toBottomOf="@id/editTaskTitleLayout"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginTop="16dp"
@@ -72,9 +74,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginTop="12dp"
-        android:onClick="onUpdateClick"
-        />
+        android:onClick="onUpdateClick" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
-
-
