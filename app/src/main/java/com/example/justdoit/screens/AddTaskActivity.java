@@ -2,23 +2,17 @@ package com.example.justdoit.screens;
 
 import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
-import android.widget.EditText;
 import android.widget.ImageView;
 
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
-
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.request.RequestOptions;
 import com.example.justdoit.BaseActivity;
 import com.example.justdoit.R;
-import com.example.justdoit.config.Config;
-import com.example.justdoit.dto.zadachi.ZadachaItemDTO;
 import com.example.justdoit.network.RetrofitClient;
+import com.example.justdoit.utils.CommonUtils;
 import com.example.justdoit.utils.FileUtil;
+import com.example.justdoit.utils.ImagePickerCropper;
 import com.example.justdoit.utils.MyLogger;
+import com.example.justdoit.dto.zadachi.ZadachaItemDTO;
 
 import java.io.File;
 
@@ -29,72 +23,88 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+import com.example.justdoit.utils.validation.logic.FieldValidator;
+import com.example.justdoit.utils.validation.logic.FormValidator;
+import com.example.justdoit.utils.validation.rules.RequiredRule;
+import com.google.android.material.textfield.TextInputEditText;
+import com.google.android.material.textfield.TextInputLayout;
+
 public class AddTaskActivity extends BaseActivity {
 
-    private EditText titleInput;
+    private TextInputLayout titleLayout;
+    private TextInputEditText titleInput;
+
     private ImageView imagePreview;
     private Uri selectedImageUri;
 
-    private final ActivityResultLauncher<String> imagePicker =
-            registerForActivityResult(
-                    new ActivityResultContracts.GetContent(),
-                    uri -> {
-                        if (uri != null) {
-                            selectedImageUri = uri;
-                            imagePreview.setImageURI(uri);
-                        }
-                    }
-            );
+    private ImagePickerCropper imageCropper;
+    private FormValidator formValidator;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_task);
 
-        titleInput = findViewById(R.id.taskTitleInput);
+        initViews();
+        initValidator();
+        initImagePicker();
+    }
+
+    private void initViews() {
+        titleLayout = findViewById(R.id.taskTitleLayout);
+        titleInput  = findViewById(R.id.taskTitleInput);
         imagePreview = findViewById(R.id.taskImagePreview);
+    }
 
-        findViewById(R.id.chooseImageButton)
-                .setOnClickListener(v -> imagePicker.launch("image/*"));
+    private void initValidator() {
+        formValidator = new FormValidator()
+                .addField(
+                        new FieldValidator(titleLayout, titleInput)
+                                .addRule(new RequiredRule("Введіть назву задачі"))
+                );
+    }
 
-        String url = Config.IMAGES_URL+"default.jpg";
-        Glide.with(this)
-                .load(url)
-                .apply(new RequestOptions().override(300))
-                .into(imagePreview);
+    private void initImagePicker() {
+        imageCropper = new ImagePickerCropper(this);
+
+        findViewById(R.id.chooseImageButton).setOnClickListener(v ->
+                imageCropper.pick(uri -> {
+                    selectedImageUri = uri;
+                    imagePreview.setImageURI(uri);
+                })
+        );
     }
 
     public void onSaveClick(View view) {
-        String title = titleInput.getText().toString().trim();
 
-        if (title.isEmpty()) {
-            MyLogger.toast("Введіть назву задачі");
+        if (!formValidator.validate()) {
             return;
         }
+
         if (selectedImageUri == null) {
             MyLogger.toast("Додайте зображення");
             return;
         }
 
-        uploadTask(title, selectedImageUri);
+        uploadTask(titleInput.getText().toString().trim(), selectedImageUri);
     }
 
     private void uploadTask(String title, Uri imageUri) {
-        String mimeType = getContentResolver().getType(imageUri);
-        if (mimeType == null) mimeType = "image/jpeg";
 
-        RequestBody titlePart =
-                RequestBody.create(title, MultipartBody.FORM);
+        RequestBody titlePart = RequestBody.create(title, MultipartBody.FORM);
 
         MultipartBody.Part imagePart = null;
-        if(imageUri != null) {
-            String imagePath = FileUtil.getImagePath(this, imageUri);
-            if (imagePath != null) {
-                File file = new File(imagePath);
-                RequestBody requestBody = RequestBody.create(MediaType.parse("multipart/form-data"), file);
-                imagePart = MultipartBody.Part.createFormData("image", file.getName(), requestBody);
-            }
+
+        String imagePath = FileUtil.getImagePath(this, imageUri);
+        if (imagePath != null) {
+            File file = new File(imagePath);
+            RequestBody requestBody =
+                    RequestBody.create(MediaType.parse("multipart/form-data"), file);
+            imagePart =
+                    MultipartBody.Part.createFormData("image", file.getName(), requestBody);
         }
+
+        CommonUtils.showLoading();
 
         RetrofitClient.getInstance()
                 .getZadachiApi()
@@ -102,31 +112,19 @@ public class AddTaskActivity extends BaseActivity {
                 .enqueue(new Callback<ZadachaItemDTO>() {
                     @Override
                     public void onResponse(Call<ZadachaItemDTO> call, Response<ZadachaItemDTO> response) {
+                        CommonUtils.hideLoading();
+
                         if (response.isSuccessful() && response.body() != null) {
                             MyLogger.toast("Задача створена");
                             goToMain();
-                        } else if (response.isSuccessful() && response.body() == null) {
-                            Log.d("AddTaskActivity", "Response successful but body is null. Code: " + response.code());
-                            MyLogger.toast("Задача створена");
-                            goToMain();
                         } else {
-                            String errorBody = "";
-                            try {
-                                if (response.errorBody() != null) {
-                                    errorBody = response.errorBody().string();
-                                }
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                            }
-                            Log.e("AddTaskActivity", "Server error: " + response.code() + ", body: " + errorBody);
                             MyLogger.toast("Помилка сервера: " + response.code());
                         }
                     }
 
                     @Override
                     public void onFailure(Call<ZadachaItemDTO> call, Throwable t) {
-                        Log.e("AddTaskActivity", "onFailure type: " + t.getClass().getName());
-                        Log.e("AddTaskActivity", "message: " + t.getMessage(), t);
+                        CommonUtils.hideLoading();
                         MyLogger.toast("Помилка: " + t.getMessage());
                     }
                 });
