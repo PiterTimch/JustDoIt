@@ -9,7 +9,7 @@ import retrofit2.http.Part;
 
 public interface AuthApi {
     @Multipart
-    @POST("/auth/register")
+    @POST("/api/auth/register")
     Call<Void> register(
             @Part("FirstName") RequestBody firstName,
             @Part("LastName") RequestBody lastName,

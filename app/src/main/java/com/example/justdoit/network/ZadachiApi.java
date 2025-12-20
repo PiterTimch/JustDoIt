@@ -18,25 +18,25 @@ import retrofit2.http.Part;
 import retrofit2.http.Path;
 
 public interface ZadachiApi {
-    @GET("/Zadachi")
+    @GET("/api/Zadachi")
     Call<List<ZadachaItemDTO>> list();
 
     @Multipart
-    @POST("/Zadachi")
+    @POST("/api/Zadachi")
     Call<ZadachaItemDTO> create(
             @Part("Name") RequestBody name,
             @Part MultipartBody.Part image
     );
 
     @Multipart
-    @PUT("/Zadachi")
+    @PUT("/api/Zadachi")
     Call<Void> update(
             @Part("id") long id,
             @Part("Name") RequestBody name,
             @Part MultipartBody.Part image
     );
 
-    @HTTP(method = "DELETE", path = "Zadachi/range", hasBody = true)
+    @HTTP(method = "DELETE", path = "/apiZadachi/range", hasBody = true)
     Call<Void> deleteRange(@Body List<Long> ids);
 
 }
