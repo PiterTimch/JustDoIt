@@ -1,79 +1,86 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
+<ScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/addTaskRoot"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="16dp"
-    android:paddingTop="?attr/actionBarSize"
-    android:background="@color/backgroundColor"
-    tools:context=".screens.AddTaskActivity">
+    android:fillViewport="true"
+    android:background="@color/backgroundColor">
 
-    <TextView
-        android:id="@+id/addTaskTitle"
-        android:layout_width="wrap_content"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/addTaskRoot"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Нова задача"
-        android:textSize="24sp"
-        android:textStyle="bold"
-        android:textColor="@color/primaryColor"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        android:padding="16dp"
+        android:paddingTop="?attr/actionBarSize"
+        tools:context=".screens.AddTaskActivity">
 
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/taskTitleLayout"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:hint="Назва задачі"
-        app:layout_constraintTop_toBottomOf="@id/addTaskTitle"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="16dp">
+        <TextView
+            android:id="@+id/addTaskTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Нова задача"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            android:textColor="@color/primaryColor"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
 
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/taskTitleInput"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-    </com.google.android.material.textfield.TextInputLayout>
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/taskTitleLayout"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:hint="Назва задачі"
+            android:layout_marginTop="16dp"
+            app:layout_constraintTop_toBottomOf="@id/addTaskTitle"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
 
-    <ImageView
-        android:id="@+id/taskImagePreview"
-        android:layout_width="0dp"
-        android:layout_height="200dp"
-        android:scaleType="centerCrop"
-        android:background="@drawable/task_bg"
-        android:contentDescription="Task image preview"
-        app:layout_constraintTop_toBottomOf="@id/taskTitleLayout"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="16dp"
-        tools:src="@drawable/ic_launcher_foreground" />
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/taskTitleInput"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+        </com.google.android.material.textfield.TextInputLayout>
 
-    <Button
-        android:id="@+id/chooseImageButton"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:text="Завантажити зображення"
-        android:backgroundTint="@color/primaryColor"
-        android:textColor="@color/titleTextColor"
-        app:layout_constraintTop_toBottomOf="@id/taskImagePreview"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="16dp" />
+        <ImageView
+            android:id="@+id/taskImagePreview"
+            android:layout_width="0dp"
+            android:layout_height="200dp"
+            android:scaleType="centerCrop"
+            android:background="@drawable/task_bg"
+            android:contentDescription="Task image preview"
+            android:layout_marginTop="16dp"
+            app:layout_constraintTop_toBottomOf="@id/taskTitleLayout"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            tools:src="@drawable/ic_launcher_foreground" />
 
-    <Button
-        android:id="@+id/saveTaskButton"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:text="Зберегти"
-        android:backgroundTint="@color/primaryColor"
-        android:textColor="@color/titleTextColor"
-        app:layout_constraintTop_toBottomOf="@id/chooseImageButton"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="12dp"
-        android:onClick="onSaveClick" />
+        <Button
+            android:id="@+id/chooseImageButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="Завантажити зображення"
+            android:backgroundTint="@color/primaryColor"
+            android:textColor="@color/titleTextColor"
+            android:layout_marginTop="16dp"
+            app:layout_constraintTop_toBottomOf="@id/taskImagePreview"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+        <Button
+            android:id="@+id/saveTaskButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="Зберегти"
+            android:backgroundTint="@color/primaryColor"
+            android:textColor="@color/titleTextColor"
+            android:layout_marginTop="12dp"
+            android:onClick="onSaveClick"
+            app:layout_constraintTop_toBottomOf="@id/chooseImageButton"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</ScrollView>
