@@ -10,6 +10,7 @@ import com.example.justdoit.R;
 import com.example.justdoit.dto.zadachi.ZadachaItemDTO;
 import com.example.justdoit.network.RetrofitClient;
 import com.example.justdoit.utils.CommonUtils;
+import com.example.justdoit.utils.FileUtil;
 import com.example.justdoit.utils.ImagePickerCropper;
 import com.example.justdoit.utils.MyLogger;
 
@@ -92,7 +93,13 @@ public class AddTaskActivity extends BaseActivity {
         RequestBody titlePart =
                 RequestBody.create(title, MultipartBody.FORM);
 
-        MultipartBody.Part imagePart = createImagePart(imageUri);
+        MultipartBody.Part imagePart =
+                FileUtil.createImagePart(
+                        this,
+                        selectedImageUri,
+                        "image",
+                        "task.jpg"
+                );
         if (imagePart == null) {
             MyLogger.toast("Не вдалося підготувати зображення");
             return;
@@ -123,32 +130,5 @@ public class AddTaskActivity extends BaseActivity {
                         MyLogger.toast("Помилка: " + t.getMessage());
                     }
                 });
-    }
-
-    private MultipartBody.Part createImagePart(Uri uri) {
-        try (InputStream is = getContentResolver().openInputStream(uri);
-             ByteArrayOutputStream buffer = new ByteArrayOutputStream()) {
-
-            byte[] data = new byte[8192];
-            int n;
-            while ((n = is.read(data)) != -1) {
-                buffer.write(data, 0, n);
-            }
-
-            RequestBody body = RequestBody.create(
-                    MediaType.parse("image/*"),
-                    buffer.toByteArray()
-            );
-
-            return MultipartBody.Part.createFormData(
-                    "image",
-                    "task.jpg",
-                    body
-            );
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        }
     }
 }

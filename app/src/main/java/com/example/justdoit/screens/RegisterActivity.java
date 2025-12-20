@@ -9,6 +9,7 @@ import com.example.justdoit.BaseActivity;
 import com.example.justdoit.R;
 import com.example.justdoit.network.RetrofitClient;
 import com.example.justdoit.utils.CommonUtils;
+import com.example.justdoit.utils.FileUtil;
 import com.example.justdoit.utils.ImagePickerCropper;
 import com.example.justdoit.utils.MyLogger;
 
@@ -125,7 +126,13 @@ public class RegisterActivity extends BaseActivity {
         RequestBody emPart = RequestBody.create(em, MultipartBody.FORM);
         RequestBody pwPart = RequestBody.create(pw, MultipartBody.FORM);
 
-        MultipartBody.Part imagePart = createImagePart(uri);
+        MultipartBody.Part imagePart =
+                FileUtil.createImagePart(
+                        this,
+                        selectedImageUri,
+                        "ImageFile",
+                        "avatar.jpg"
+                );
 
         CommonUtils.showLoading();
 
@@ -152,33 +159,5 @@ public class RegisterActivity extends BaseActivity {
                         MyLogger.toast("Помилка: " + t.getMessage());
                     }
                 });
-    }
-
-    private MultipartBody.Part createImagePart(Uri uri) {
-        try {
-            InputStream is = getContentResolver().openInputStream(uri);
-
-            ByteArrayOutputStream buffer = new ByteArrayOutputStream();
-            byte[] data = new byte[8192];
-            int n;
-            while ((n = is.read(data)) != -1) {
-                buffer.write(data, 0, n);
-            }
-
-            RequestBody body = RequestBody.create(
-                    MediaType.parse("image/jpeg"),
-                    buffer.toByteArray()
-            );
-
-            return MultipartBody.Part.createFormData(
-                    "ImageFile",
-                    "avatar.jpg",
-                    body
-            );
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        }
     }
 }
