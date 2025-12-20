@@ -16,10 +16,11 @@ import com.example.justdoit.BaseActivity;
 import com.example.justdoit.R;
 import com.example.justdoit.config.Config;
 import com.example.justdoit.network.RetrofitClient;
-import com.example.justdoit.utils.FileUtil;
+import com.example.justdoit.utils.CommonUtils;
 import com.example.justdoit.utils.MyLogger;
 
-import java.io.File;
+import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
 
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
@@ -32,6 +33,7 @@ public class EditTaskActivity extends BaseActivity {
 
     private EditText titleInput;
     private ImageView imagePreview;
+
     private Uri selectedImageUri;
     private long taskId = -1;
     private String currentImageName;
@@ -77,12 +79,14 @@ public class EditTaskActivity extends BaseActivity {
     }
 
     public void onUpdateClick(View view) {
+
         String title = titleInput.getText().toString().trim();
 
         if (title.isEmpty()) {
             MyLogger.toast("Введіть назву задачі");
             return;
         }
+
         if (taskId == -1) {
             MyLogger.toast("Немає ідентифікатора задачі");
             return;
@@ -92,21 +96,20 @@ public class EditTaskActivity extends BaseActivity {
     }
 
     private void updateTask(long id, String title, Uri imageUri) {
-        String mimeType = imageUri != null ? getContentResolver().getType(imageUri) : null;
-        if (mimeType == null) mimeType = "image/jpeg";
 
         RequestBody titlePart =
                 RequestBody.create(title, MultipartBody.FORM);
 
         MultipartBody.Part imagePart = null;
-        if(imageUri != null) {
-            String imagePath = FileUtil.getImagePath(this, imageUri);
-            if (imagePath != null) {
-                File file = new File(imagePath);
-                RequestBody requestBody = RequestBody.create(MediaType.parse("multipart/form-data"), file);
-                imagePart = MultipartBody.Part.createFormData("image", file.getName(), requestBody);
+        if (imageUri != null) {
+            imagePart = createImagePart(imageUri);
+            if (imagePart == null) {
+                MyLogger.toast("Не вдалося підготувати зображення");
+                return;
             }
         }
+
+        CommonUtils.showLoading();
 
         RetrofitClient.getInstance()
                 .getZadachiApi()
@@ -114,18 +117,48 @@ public class EditTaskActivity extends BaseActivity {
                 .enqueue(new Callback<Void>() {
                     @Override
                     public void onResponse(Call<Void> call, Response<Void> response) {
-                        MyLogger.toast("Задача оновлена");
-                        goToMain();
+                        CommonUtils.hideLoading();
+                        if (response.isSuccessful()) {
+                            MyLogger.toast("Задача оновлена");
+                            goToMain();
+                        } else {
+                            MyLogger.toast("Помилка сервера: " + response.code());
+                        }
                     }
 
                     @Override
                     public void onFailure(Call<Void> call, Throwable t) {
-                        Log.e("EditTaskActivity", "onFailure type: " + t.getClass().getName());
-                        Log.e("EditTaskActivity", "message: " + t.getMessage(), t);
+                        CommonUtils.hideLoading();
+                        Log.e("EditTaskActivity", "onFailure", t);
                         MyLogger.toast("Помилка: " + t.getMessage());
                     }
                 });
     }
+
+    private MultipartBody.Part createImagePart(Uri uri) {
+        try (InputStream is = getContentResolver().openInputStream(uri);
+             ByteArrayOutputStream buffer = new ByteArrayOutputStream()) {
+
+            byte[] data = new byte[8192];
+            int n;
+            while ((n = is.read(data)) != -1) {
+                buffer.write(data, 0, n);
+            }
+
+            RequestBody body = RequestBody.create(
+                    MediaType.parse("image/*"),
+                    buffer.toByteArray()
+            );
+
+            return MultipartBody.Part.createFormData(
+                    "image",
+                    "task.jpg",
+                    body
+            );
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
 }
-
-

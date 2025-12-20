@@ -7,14 +7,14 @@ import android.widget.ImageView;
 
 import com.example.justdoit.BaseActivity;
 import com.example.justdoit.R;
+import com.example.justdoit.dto.zadachi.ZadachaItemDTO;
 import com.example.justdoit.network.RetrofitClient;
 import com.example.justdoit.utils.CommonUtils;
-import com.example.justdoit.utils.FileUtil;
 import com.example.justdoit.utils.ImagePickerCropper;
 import com.example.justdoit.utils.MyLogger;
-import com.example.justdoit.dto.zadachi.ZadachaItemDTO;
 
-import java.io.File;
+import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
 
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
@@ -37,7 +37,7 @@ public class AddTaskActivity extends BaseActivity {
     private ImageView imagePreview;
     private Uri selectedImageUri;
 
-    private ImagePickerCropper imageCropper;
+    private ImagePickerCropper imagePicker;
     private FormValidator formValidator;
 
     @Override
@@ -65,10 +65,10 @@ public class AddTaskActivity extends BaseActivity {
     }
 
     private void initImagePicker() {
-        imageCropper = new ImagePickerCropper(this);
+        imagePicker = new ImagePickerCropper(this);
 
         findViewById(R.id.chooseImageButton).setOnClickListener(v ->
-                imageCropper.pick(uri -> {
+                imagePicker.pick(uri -> {
                     selectedImageUri = uri;
                     imagePreview.setImageURI(uri);
                 })
@@ -77,9 +77,7 @@ public class AddTaskActivity extends BaseActivity {
 
     public void onSaveClick(View view) {
 
-        if (!formValidator.validate()) {
-            return;
-        }
+        if (!formValidator.validate()) return;
 
         if (selectedImageUri == null) {
             MyLogger.toast("Додайте зображення");
@@ -91,17 +89,13 @@ public class AddTaskActivity extends BaseActivity {
 
     private void uploadTask(String title, Uri imageUri) {
 
-        RequestBody titlePart = RequestBody.create(title, MultipartBody.FORM);
+        RequestBody titlePart =
+                RequestBody.create(title, MultipartBody.FORM);
 
-        MultipartBody.Part imagePart = null;
-
-        String imagePath = FileUtil.getImagePath(this, imageUri);
-        if (imagePath != null) {
-            File file = new File(imagePath);
-            RequestBody requestBody =
-                    RequestBody.create(MediaType.parse("multipart/form-data"), file);
-            imagePart =
-                    MultipartBody.Part.createFormData("image", file.getName(), requestBody);
+        MultipartBody.Part imagePart = createImagePart(imageUri);
+        if (imagePart == null) {
+            MyLogger.toast("Не вдалося підготувати зображення");
+            return;
         }
 
         CommonUtils.showLoading();
@@ -111,10 +105,11 @@ public class AddTaskActivity extends BaseActivity {
                 .create(titlePart, imagePart)
                 .enqueue(new Callback<ZadachaItemDTO>() {
                     @Override
-                    public void onResponse(Call<ZadachaItemDTO> call, Response<ZadachaItemDTO> response) {
+                    public void onResponse(Call<ZadachaItemDTO> call,
+                                           Response<ZadachaItemDTO> response) {
                         CommonUtils.hideLoading();
 
-                        if (response.isSuccessful() && response.body() != null) {
+                        if (response.isSuccessful()) {
                             MyLogger.toast("Задача створена");
                             goToMain();
                         } else {
@@ -128,5 +123,32 @@ public class AddTaskActivity extends BaseActivity {
                         MyLogger.toast("Помилка: " + t.getMessage());
                     }
                 });
+    }
+
+    private MultipartBody.Part createImagePart(Uri uri) {
+        try (InputStream is = getContentResolver().openInputStream(uri);
+             ByteArrayOutputStream buffer = new ByteArrayOutputStream()) {
+
+            byte[] data = new byte[8192];
+            int n;
+            while ((n = is.read(data)) != -1) {
+                buffer.write(data, 0, n);
+            }
+
+            RequestBody body = RequestBody.create(
+                    MediaType.parse("image/*"),
+                    buffer.toByteArray()
+            );
+
+            return MultipartBody.Part.createFormData(
+                    "image",
+                    "task.jpg",
+                    body
+            );
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 }
