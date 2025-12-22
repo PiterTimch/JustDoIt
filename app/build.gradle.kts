@@ -46,4 +46,5 @@ dependencies {
     implementation("com.github.bumptech.glide:glide:5.0.5")
     implementation("com.squareup.okhttp3:logging-interceptor:5.3.2")
     implementation("com.github.yalantis:ucrop:2.2.11")
+    implementation("com.auth0.android:jwtdecode:2.0.2")
 }

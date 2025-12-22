@@ -36,7 +36,7 @@ public interface ZadachiApi {
             @Part MultipartBody.Part image
     );
 
-    @HTTP(method = "DELETE", path = "/apiZadachi/range", hasBody = true)
+    @HTTP(method = "DELETE", path = "/api/Zadachi/range", hasBody = true)
     Call<Void> deleteRange(@Body List<Long> ids);
 
 }

@@ -7,6 +7,7 @@ import android.widget.ImageView;
 
 import com.example.justdoit.BaseActivity;
 import com.example.justdoit.R;
+import com.example.justdoit.dto.auth.AuthResponse;
 import com.example.justdoit.network.RetrofitClient;
 import com.example.justdoit.utils.CommonUtils;
 import com.example.justdoit.utils.FileUtil;
@@ -23,6 +24,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+import com.example.justdoit.utils.auth.SessionManager;
 import com.example.justdoit.utils.validation.logic.FieldValidator;
 import com.example.justdoit.utils.validation.logic.FormValidator;
 import com.example.justdoit.utils.validation.rules.EmailRule;
@@ -139,13 +141,17 @@ public class RegisterActivity extends BaseActivity {
         RetrofitClient.getInstance()
                 .getAuthApi()
                 .register(fnPart, lnPart, emPart, pwPart, imagePart)
-                .enqueue(new Callback<Void>() {
+                .enqueue(new Callback<AuthResponse>() {
 
                     @Override
-                    public void onResponse(Call<Void> call, Response<Void> response) {
+                    public void onResponse(Call<AuthResponse> call, Response<AuthResponse> response) {
                         CommonUtils.hideLoading();
 
                         if (response.isSuccessful()) {
+                            String token = response.body().getToken();
+                            SessionManager sessionManager = new SessionManager(RegisterActivity.this);
+                            sessionManager.saveToken(token);
+
                             MyLogger.toast("Реєстрація успішна");
                             finish();
                         } else {
@@ -154,7 +160,7 @@ public class RegisterActivity extends BaseActivity {
                     }
 
                     @Override
-                    public void onFailure(Call<Void> call, Throwable t) {
+                    public void onFailure(Call<AuthResponse> call, Throwable t) {
                         CommonUtils.hideLoading();
                         MyLogger.toast("Помилка: " + t.getMessage());
                     }

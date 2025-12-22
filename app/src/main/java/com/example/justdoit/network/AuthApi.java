@@ -1,5 +1,7 @@
 package com.example.justdoit.network;
 
+import com.example.justdoit.dto.auth.AuthResponse;
+
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
 import retrofit2.Call;
@@ -10,7 +12,7 @@ import retrofit2.http.Part;
 public interface AuthApi {
     @Multipart
     @POST("/api/auth/register")
-    Call<Void> register(
+    Call<AuthResponse> register(
             @Part("FirstName") RequestBody firstName,
             @Part("LastName") RequestBody lastName,
             @Part("Email") RequestBody email,
