@@ -35,7 +35,7 @@ public class MainActivity extends BaseActivity {
     View deleteButton;
     View accountButton;
 
-    private ImageView userAvatar; // Твоя іконка профілю
+    private ImageView userAvatar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

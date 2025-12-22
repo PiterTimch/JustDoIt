@@ -21,7 +21,6 @@ public class UserState {
         try {
             JWT jwt = new JWT(token);
 
-            // Дістаємо дані. Назви клеймів мають бути такі ж, як у C# коді
             this.name = jwt.getClaim("name").asString();
             this.email = jwt.getClaim("email").asString();
             this.image = jwt.getClaim("image").asString();
