@@ -1,10 +1,12 @@
 package com.example.justdoit.network;
 
 import com.example.justdoit.dto.auth.AuthResponse;
+import com.example.justdoit.dto.auth.LoginRequestDTO;
 
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
 import retrofit2.Call;
+import retrofit2.http.Body;
 import retrofit2.http.Multipart;
 import retrofit2.http.POST;
 import retrofit2.http.Part;
@@ -19,4 +21,7 @@ public interface AuthApi {
             @Part("Password") RequestBody password,
             @Part MultipartBody.Part image
     );
+
+    @POST("/api/auth/login")
+    Call<AuthResponse> login(@Body LoginRequestDTO model);
 }

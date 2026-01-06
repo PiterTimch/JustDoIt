@@ -13,6 +13,7 @@ public class HomeApplication extends Application implements IJwtSecurityService 
     @Override
     public void onCreate() {
         super.onCreate();
+        instance = this;
         appContext = getApplicationContext();
     }
 
