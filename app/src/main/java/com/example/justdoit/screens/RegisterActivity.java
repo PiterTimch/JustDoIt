@@ -7,8 +7,10 @@ import android.widget.ImageView;
 
 import com.example.justdoit.BaseActivity;
 import com.example.justdoit.R;
+import com.example.justdoit.application.HomeApplication;
 import com.example.justdoit.dto.auth.AuthResponse;
 import com.example.justdoit.network.RetrofitClient;
+import com.example.justdoit.security.IJwtSecurityService;
 import com.example.justdoit.utils.CommonUtils;
 import com.example.justdoit.utils.FileUtil;
 import com.example.justdoit.utils.ImagePickerCropper;
@@ -149,8 +151,10 @@ public class RegisterActivity extends BaseActivity {
 
                         if (response.isSuccessful()) {
                             String token = response.body().getToken();
-                            SessionManager sessionManager = new SessionManager(RegisterActivity.this);
-                            sessionManager.saveToken(token);
+//                            SessionManager sessionManager = new SessionManager(RegisterActivity.this);
+//                            sessionManager.saveToken(token);
+
+                            HomeApplication.getInstance().saveJwtToken(token);
 
                             MyLogger.toast("Реєстрація успішна");
                             finish();
