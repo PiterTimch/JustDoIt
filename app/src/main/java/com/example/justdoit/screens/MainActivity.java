@@ -80,25 +80,19 @@ public class MainActivity extends BaseActivity {
     }
 
     private void updateAuthUI() {
-        String token = HomeApplication.getInstance().getToken();
+        if (HomeApplication.getInstance().isAuth()) {
 
-        if (token != null && !token.isEmpty()) {
             UserState user = UserState.getInstance();
-            if (!user.isLoggedIn()) {
-                user.setUserFromToken(token);
-            }
 
             accountButton.setVisibility(View.GONE);
             userAvatar.setVisibility(View.VISIBLE);
 
-            String imageUrl = Config.IMAGES_URL + "200_" + user.getImage();
-
-            Glide.with(this)
-                    .load(imageUrl)
-                    .circleCrop()
-                    .placeholder(R.drawable.ic_launcher_background)
-                    .error(R.drawable.ic_launcher_foreground)
-                    .into(userAvatar);
+            if (user.getImage() != null) {
+                Glide.with(this)
+                        .load(Config.IMAGES_URL + "200_" + user.getImage())
+                        .circleCrop()
+                        .into(userAvatar);
+            }
 
         } else {
             accountButton.setVisibility(View.VISIBLE);

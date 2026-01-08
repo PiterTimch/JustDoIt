@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 
 import com.example.justdoit.security.IJwtSecurityService;
+import com.example.justdoit.utils.auth.UserState;
 
 public class HomeApplication extends Application implements IJwtSecurityService {
     private static HomeApplication instance;
@@ -25,21 +26,26 @@ public class HomeApplication extends Application implements IJwtSecurityService 
         return appContext;
     }
 
-    @Override
-    public void saveJwtToken(String token) {
-        SharedPreferences prefs;
-        SharedPreferences.Editor edit;
-        prefs =  instance.getSharedPreferences("jwtStore", MODE_PRIVATE);
-        edit=prefs.edit();
-        try {
-            edit.putString("token",token);
-            edit.commit();
-        }
-        catch (Exception e)
-        {
-            e.printStackTrace();
+    private void syncUserFromToken() {
+        String token = getToken();
+        if (token == null || token.isEmpty()) return;
+
+        UserState user = UserState.getInstance();
+        if (!user.isLoggedIn()) {
+            user.setUserFromToken(token);
         }
     }
+
+    @Override
+    public void saveJwtToken(String token) {
+        SharedPreferences prefs =
+                instance.getSharedPreferences("jwtStore", MODE_PRIVATE);
+
+        prefs.edit().putString("token", token).commit();
+
+        syncUserFromToken();
+    }
+
 
     @Override
     public String getToken() {
