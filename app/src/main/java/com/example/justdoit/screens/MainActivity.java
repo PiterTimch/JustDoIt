@@ -59,6 +59,7 @@ public class MainActivity extends BaseActivity {
             UserState.getInstance().clear();
             updateAuthUI();
             MyLogger.toast("Ви вийшли з системи");
+            goToLogin();
         });
 
         deleteButton.setOnClickListener(v -> {

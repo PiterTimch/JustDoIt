@@ -7,6 +7,7 @@ import android.view.MenuItem;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.justdoit.screens.AddTaskActivity;
+import com.example.justdoit.screens.LoginActivity;
 import com.example.justdoit.screens.MainActivity;
 import com.example.justdoit.screens.RegisterActivity;
 import com.example.justdoit.utils.CommonUtils;
@@ -43,6 +44,13 @@ public class BaseActivity extends AppCompatActivity {
         Intent intent = new Intent(BaseActivity.this, MainActivity.class);
         startActivity(intent);
     }
+
+    protected void goToLogin() {
+        Intent intent = new Intent(this, LoginActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(intent);
+    }
+
 
     protected void goToRegistration() {
         Intent intent = new Intent(BaseActivity.this, RegisterActivity.class);

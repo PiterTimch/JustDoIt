@@ -16,6 +16,8 @@ public class HomeApplication extends Application implements IJwtSecurityService 
         super.onCreate();
         instance = this;
         appContext = getApplicationContext();
+
+        syncUserFromToken();
     }
 
     public static HomeApplication getInstance() {
