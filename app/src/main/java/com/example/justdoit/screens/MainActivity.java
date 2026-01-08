@@ -13,12 +13,12 @@ import com.bumptech.glide.Glide;
 import com.example.justdoit.BaseActivity;
 import com.example.justdoit.R;
 import com.example.justdoit.TaskAdapter;
+import com.example.justdoit.application.HomeApplication;
 import com.example.justdoit.config.Config;
 import com.example.justdoit.dto.zadachi.ZadachaItemDTO;
 import com.example.justdoit.network.RetrofitClient;
 import com.example.justdoit.utils.CommonUtils;
 import com.example.justdoit.utils.MyLogger;
-import com.example.justdoit.utils.auth.SessionManager;
 import com.example.justdoit.utils.auth.UserState;
 
 import java.util.List;
@@ -55,7 +55,7 @@ public class MainActivity extends BaseActivity {
         accountButton.setOnClickListener(v -> goToRegistration());
 
         userAvatar.setOnClickListener(v -> {
-            new SessionManager(this).logout();
+            HomeApplication.getInstance().deleteToken();
             UserState.getInstance().clear();
             updateAuthUI();
             MyLogger.toast("Ви вийшли з системи");
@@ -80,10 +80,9 @@ public class MainActivity extends BaseActivity {
     }
 
     private void updateAuthUI() {
-        SessionManager sessionManager = new SessionManager(this);
-        String token = sessionManager.getToken();
+        String token = HomeApplication.getInstance().getToken();
 
-        if (token != null) {
+        if (token != null && !token.isEmpty()) {
             UserState user = UserState.getInstance();
             if (!user.isLoggedIn()) {
                 user.setUserFromToken(token);

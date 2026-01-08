@@ -10,23 +10,17 @@ import com.example.justdoit.R;
 import com.example.justdoit.application.HomeApplication;
 import com.example.justdoit.dto.auth.AuthResponse;
 import com.example.justdoit.network.RetrofitClient;
-import com.example.justdoit.security.IJwtSecurityService;
 import com.example.justdoit.utils.CommonUtils;
 import com.example.justdoit.utils.FileUtil;
 import com.example.justdoit.utils.ImagePickerCropper;
 import com.example.justdoit.utils.MyLogger;
 
-import java.io.ByteArrayOutputStream;
-import java.io.InputStream;
-
-import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-import com.example.justdoit.utils.auth.SessionManager;
 import com.example.justdoit.utils.validation.logic.FieldValidator;
 import com.example.justdoit.utils.validation.logic.FormValidator;
 import com.example.justdoit.utils.validation.rules.EmailRule;
@@ -151,8 +145,6 @@ public class RegisterActivity extends BaseActivity {
 
                         if (response.isSuccessful()) {
                             String token = response.body().getToken();
-//                            SessionManager sessionManager = new SessionManager(RegisterActivity.this);
-//                            sessionManager.saveToken(token);
 
                             HomeApplication.getInstance().saveJwtToken(token);
 
