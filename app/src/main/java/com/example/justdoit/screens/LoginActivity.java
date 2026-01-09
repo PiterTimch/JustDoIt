@@ -79,6 +79,10 @@ public class LoginActivity extends BaseActivity {
         );
     }
 
+    public void onGoToRegisterClick(View view) {
+        goToRegistration();
+    }
+
     private void uploadLogin(String em, String pw) {
 
         CommonUtils.showLoading();
