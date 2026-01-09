@@ -130,6 +130,19 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
 
+        <Button
+            android:id="@+id/backToLoginBtn"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="Повернутись на вхід"
+            android:backgroundTint="@color/primaryColor"
+            android:textColor="@color/titleTextColor"
+            android:layout_marginTop="16dp"
+            android:onClick="onBackToLoginClick"
+            app:layout_constraintTop_toBottomOf="@id/registerBtn"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </ScrollView>

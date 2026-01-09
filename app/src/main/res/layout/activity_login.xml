@@ -78,7 +78,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Немає акаунту? Реєстрація"
-            android:textColor="@color/primaryColor"
+            android:textColor="@color/secondaryTextColor"
             android:textSize="14sp"
             android:layout_marginTop="12dp"
             android:onClick="onGoToRegisterClick"
