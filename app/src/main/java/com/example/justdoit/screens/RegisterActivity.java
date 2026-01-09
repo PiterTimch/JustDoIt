@@ -149,6 +149,7 @@ public class RegisterActivity extends BaseActivity {
                             HomeApplication.getInstance().saveJwtToken(token);
 
                             MyLogger.toast("Реєстрація успішна");
+                            goToMain();
                             finish();
                         } else {
                             MyLogger.toast("Помилка сервера: " + response.code());
